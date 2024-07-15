@@ -6,10 +6,12 @@ type section struct {
 	char   [][]*rune
 }
 
-func (s *section) SetChar(row, col int, char rune) {
-	*s.char[row][col] = char
+func (s *section) CreateTextArea(autoWrap bool) textarea {
+	area := CreateTextArea(s.width, s.height, autoWrap)
+	area.char = s.char
+	return area
 }
 
-func (s *section) CreateTextArea(autoWrap bool) textarea {
-	return CreateTextArea(s.width, s.height, autoWrap)
+func (s *section) SetChar(row, col int, char rune) {
+	*s.char[row][col] = char
 }

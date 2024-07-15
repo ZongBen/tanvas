@@ -7,15 +7,15 @@ import (
 type textarea struct {
 	width    int
 	height   int
-	char     [][]rune
+	char     [][]*rune
 	autoWrap bool
 }
 
 func CreateTextArea(width, height int, autoWrap bool) textarea {
 	area := textarea{width: width, height: height, autoWrap: autoWrap}
-	area.char = make([][]rune, height)
+	area.char = make([][]*rune, height)
 	for i := range area.char {
-		area.char[i] = make([]rune, width)
+		area.char[i] = make([]*rune, width)
 	}
 	return area
 }
@@ -24,7 +24,7 @@ func (ta *textarea) SetContent(content string) {
 	lineList := strings.Split(content, "\n")
 	if !ta.autoWrap {
 		for y, line := range lineList[:min(ta.height, len(lineList))] {
-			copy(ta.char[y], []rune(line))
+			copy(ta.char[y], getRune(line))
 		}
 	} else {
 		rowOffset := 0
@@ -35,21 +35,25 @@ func (ta *textarea) SetContent(content string) {
 				if rowOffset+i >= ta.height {
 					break
 				}
-				copy(ta.char[rowOffset+i], []rune(line))
+				copy(ta.char[rowOffset+i], getRune(line))
 			}
 		}
 	}
 }
 
 func (ta *textarea) ClearTextArea() {
-	ta.char = make([][]rune, ta.height)
+	ta.char = make([][]*rune, ta.height)
 	for i := range ta.char {
-		ta.char[i] = make([]rune, ta.width)
+		ta.char[i] = make([]*rune, ta.width)
 	}
 }
 
-func (ta *textarea) GetContent() [][]rune {
-	return ta.char
+func getRune(s string) []*rune {
+	r := make([]*rune, len(s))
+	for i, v := range s {
+		r[i] = &v
+	}
+	return r
 }
 
 func min(a, b int) int {
