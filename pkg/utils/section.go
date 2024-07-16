@@ -30,7 +30,6 @@ func (s *section) SetCol(offset, col int, content string) {
 }
 
 func (s *section) SetContent(offsetRow, offsetCol int, content string) {
-	content = strings.Trim(content, " ")
 	lines := strings.Split(content, "\n")
 	for i := range s.single[offsetRow:min(len(lines)+offsetRow, s.height)] {
 		line := strings.Trim(lines[i], " ")
