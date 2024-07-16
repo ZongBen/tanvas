@@ -25,6 +25,8 @@ func main() {
 	s1.SetRow(0, 0, "takebylay1")
 
 	s2.SetRow(3, 1, "test               ")
+
+	s2.SetContent(0, 0, `oneline test second line`)
 	view := c1.Render() + c2.Render()
 	fmt.Println(view)
 }

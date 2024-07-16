@@ -1,5 +1,9 @@
 package utils
 
+import (
+	"strings"
+)
+
 type section struct {
 	width   int
 	height  int
@@ -22,6 +26,16 @@ func (s *section) SetCol(offset, col int, content string) {
 	max_len := min(len(content), s.height-offset)
 	for i, char := range content[:max_len] {
 		s.SetChar(offset+i, col, char)
+	}
+}
+
+func (s *section) SetContent(offsetRow, offsetCol int, content string) {
+	content = strings.Trim(content, " ")
+	lines := strings.Split(content, "\n")
+	for i := range s.single[offsetRow:min(len(lines)+offsetRow, s.height)] {
+		line := strings.Trim(lines[i], " ")
+		max_len := min(len(line), s.width-offsetCol)
+		s.SetRow(offsetCol, i, line[:max_len])
 	}
 }
 
