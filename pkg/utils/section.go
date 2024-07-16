@@ -17,12 +17,12 @@ func (s *section) SetRow(row int, content string) {
 	}
 }
 
-func (s *section) SetRowOffset(row, col int, content string) {
+func (s *section) SetRowOffset(offset, row int, content string) {
 	for i, char := range content[:min(len(content), s.width)] {
-		if col+i >= s.width {
+		if offset+i >= s.width {
 			break
 		}
-		s.SetChar(row, col+i, char)
+		s.SetChar(row, offset+i, char)
 	}
 }
 
@@ -32,12 +32,12 @@ func (s *section) SetCol(col int, content string) {
 	}
 }
 
-func (s *section) SetColOffset(row, col int, content string) {
+func (s *section) SetColOffset(offset, col int, content string) {
 	for i, char := range content[:min(len(content), s.height)] {
-		if row+i >= s.height {
+		if offset+i >= s.height {
 			break
 		}
-		s.SetChar(row+i, col, char)
+		s.SetChar(offset+i, col, char)
 	}
 }
 
