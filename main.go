@@ -1,16 +1,22 @@
 package main
 
 import (
-	"github.com/ZongBen/tanvas/utiles"
+	"github.com/ZongBen/tanvas/utils"
 )
 
 func main() {
-	c := utiles.CreateCanvas(10, 10)
-	s := c.CreateSection(0, 0, 5, 5)
+	c := utiles.CreateCanvas(10, 3, 3)
 
-	ta := s.CreateTextArea(true)
+	s0 := c.CreateSection(0, 0, 10, 3, 0)
+	s1 := c.CreateSection(0, 0, 10, 3, 1)
+	s2 := c.CreateSection(0, 0, 10, 3, 2)
 
-	ta.SetContent("Hello, World!")
+	s0.SetRow(0, "0123456789")
+	s0.SetRow(1, "abcdefghij")
+	s0.SetRow(2, "ABCDEFGHIJ")
 
+	s1.SetRow(0, "takebylay1")
+
+	s2.SetRowOffset(1, 3, "test")
 	c.Render()
 }

@@ -51,10 +51,3 @@ func (ta *textarea) ClearTextArea() {
 func (ta *textarea) GetContent() [][]rune {
 	return ta.char
 }
-
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
