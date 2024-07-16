@@ -14,6 +14,8 @@ type single struct {
 	display bool
 }
 
+var sb = new(strings.Builder)
+
 func CreateCanvas(width, height, depth int) canvas {
 	c := canvas{width: width, height: height, depth: depth}
 	c.single = make([][][]single, height)
@@ -39,8 +41,7 @@ func (c *canvas) CreateSection(x, y, width, height, layer int) section {
 }
 
 func (c *canvas) Render() {
-	sb := new(strings.Builder)
-
+	sb.Reset()
 	for _, row := range c.single {
 		for _, char := range row {
 			for depth := c.depth - 1; depth >= 0; depth-- {

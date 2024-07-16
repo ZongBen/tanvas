@@ -14,9 +14,10 @@ func main() {
 	s0.SetRow(0, "0123456789")
 	s0.SetRow(1, "abcdefghij")
 	s0.SetRow(2, "ABCDEFGHIJ")
+	c.Render()
 
 	s1.SetRow(0, "takebylay1")
 
-	s2.SetRowOffset(1, 3, "test")
+	s2.SetRowOffset(3, 1, "test")
 	c.Render()
 }
