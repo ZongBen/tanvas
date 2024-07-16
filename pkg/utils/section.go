@@ -1,4 +1,4 @@
-package utiles
+package utils
 
 type section struct {
 	width   int

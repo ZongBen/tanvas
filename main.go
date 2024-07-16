@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/ZongBen/tanvas/utils"
+	"github.com/ZongBen/tanvas/pkg/utils"
 )
 
 func main() {
-	c := utiles.CreateCanvas(10, 3, 3)
+	c := utils.CreateCanvas(10, 3, 3)
 
 	s0 := c.CreateSection(0, 0, 10, 3, 0)
 	s1 := c.CreateSection(0, 0, 10, 3, 1)
