@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/ZongBen/tanvas/pkg/utils"
 )
 
@@ -23,6 +25,6 @@ func main() {
 	s1.SetRow(0, 0, "takebylay1")
 
 	s2.SetRow(3, 1, "test               ")
-	c1.Render()
-	c2.Render()
+	view := c1.Render() + c2.Render()
+	fmt.Println(view)
 }

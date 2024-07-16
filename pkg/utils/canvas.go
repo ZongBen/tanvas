@@ -35,7 +35,7 @@ func (c *canvas) CreateSection(x, y, width, height, layer int) section {
 	return s
 }
 
-func (c *canvas) Render() {
+func (c *canvas) Render() string {
 	sb.Reset()
 	for _, row := range c.single {
 		for _, single := range row {
@@ -55,5 +55,5 @@ func (c *canvas) Render() {
 		}
 		sb.WriteString("\n")
 	}
-	print(sb.String())
+	return sb.String()
 }
