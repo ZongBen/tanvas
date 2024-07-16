@@ -9,11 +9,6 @@ type canvas struct {
 	single [][][]single
 }
 
-type single struct {
-	char    rune
-	display bool
-}
-
 var sb = new(strings.Builder)
 
 func CreateCanvas(width, height, depth int) canvas {
