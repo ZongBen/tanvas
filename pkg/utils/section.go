@@ -11,32 +11,16 @@ func (s *section) SetChar(row, col int, char rune) {
 	*s.single[row][col] = single{char: char, display: s.display}
 }
 
-func (s *section) SetRow(row int, content string) {
-	for i, char := range content[:min(len(content), s.width)] {
-		s.SetChar(row, i, char)
-	}
-}
-
-func (s *section) SetRowOffset(offset, row int, content string) {
-	for i, char := range content[:min(len(content), s.width)] {
-		if offset+i >= s.width {
-			break
-		}
+func (s *section) SetRow(offset, row int, content string) {
+	max_len := min(len(content), s.width-offset)
+	for i, char := range content[:max_len] {
 		s.SetChar(row, offset+i, char)
 	}
 }
 
-func (s *section) SetCol(col int, content string) {
-	for i, char := range content[:min(len(content), s.height)] {
-		s.SetChar(i, col, char)
-	}
-}
-
-func (s *section) SetColOffset(offset, col int, content string) {
-	for i, char := range content[:min(len(content), s.height)] {
-		if offset+i >= s.height {
-			break
-		}
+func (s *section) SetCol(offset, col int, content string) {
+	max_len := min(len(content), s.height-offset)
+	for i, char := range content[:max_len] {
 		s.SetChar(offset+i, col, char)
 	}
 }

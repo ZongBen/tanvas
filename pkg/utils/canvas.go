@@ -43,17 +43,17 @@ func (c *canvas) CreateSection(x, y, width, height, layer int) section {
 func (c *canvas) Render() {
 	sb.Reset()
 	for _, row := range c.single {
-		for _, char := range row {
+		for _, single := range row {
 			for depth := c.depth - 1; depth >= 0; depth-- {
-				if char[depth].char == 0 {
+				if single[depth].char == 0 {
 					if depth == 0 {
 						sb.WriteString(" ")
 					}
 					continue
 				}
 
-				if char[depth].display {
-					sb.WriteString(string(char[depth].char))
+				if single[depth].display {
+					sb.WriteString(string(single[depth].char))
 					break
 				}
 			}
