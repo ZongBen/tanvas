@@ -18,6 +18,9 @@ type section struct {
 }
 
 func (s *section) SetChar(row, col int, char rune) {
+	if row < 0 || row >= s.height || col < 0 || col >= s.width {
+		return
+	}
 	*s.plate[row][col] = single{char: char, display: s.display}
 }
 
