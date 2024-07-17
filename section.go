@@ -8,6 +8,7 @@ type Section interface {
 	SetCol(offset, col int, content string)
 	SetDisplay(display bool)
 	ToggleDisplay()
+	Clear()
 }
 
 type section struct {
@@ -52,6 +53,14 @@ func (s *section) setSectionDisplay(display bool) {
 	for _, row := range s.plate {
 		for _, cell := range row {
 			cell.display = display
+		}
+	}
+}
+
+func (s *section) Clear() {
+	for _, row := range s.plate {
+		for _, cell := range row {
+			cell.char = 0
 		}
 	}
 }

@@ -5,6 +5,7 @@ import "strings"
 type Canvas interface {
 	CreateSection(x, y, width, height, layer int) section
 	Render() string
+	Clear()
 }
 
 type canvas struct {
@@ -61,4 +62,14 @@ func (c *canvas) Render() string {
 		sb.WriteString("\n")
 	}
 	return sb.String()
+}
+
+func (c *canvas) Clear() {
+	for _, row := range c.container {
+		for _, single := range row {
+			for i := range single {
+				single[i].char = 0
+			}
+		}
+	}
 }
