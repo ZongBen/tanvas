@@ -2,6 +2,11 @@ package tanvas
 
 import "strings"
 
+type Canvas interface {
+	CreateSection(x, y, width, height, layer int) section
+	Render() string
+}
+
 type canvas struct {
 	width     int
 	height    int

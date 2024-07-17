@@ -2,6 +2,14 @@ package tanvas
 
 import ()
 
+type Section interface {
+	SetChar(row, col int, char rune)
+	SetRow(offset, row int, content string)
+	SetCol(offset, col int, content string)
+	SetDisplay(display bool)
+	ToggleDisplay()
+}
+
 type section struct {
 	width   int
 	height  int
