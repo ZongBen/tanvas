@@ -1,18 +1,16 @@
-package utils
+package tanvas
 
-import (
-	"strings"
-)
+import ()
 
 type section struct {
 	width   int
 	height  int
-	single  [][]*single
+	plate   [][]*single
 	display bool
 }
 
 func (s *section) SetChar(row, col int, char rune) {
-	*s.single[row][col] = single{char: char, display: s.display}
+	*s.plate[row][col] = single{char: char, display: s.display}
 }
 
 func (s *section) SetRow(offset, row int, content string) {
@@ -29,15 +27,6 @@ func (s *section) SetCol(offset, col int, content string) {
 	}
 }
 
-func (s *section) SetContent(offsetRow, offsetCol int, content string) {
-	lines := strings.Split(content, "\n")
-	for i := range s.single[offsetRow:min(len(lines)+offsetRow, s.height)] {
-		line := strings.Trim(lines[i], " ")
-		max_len := min(len(line), s.width-offsetCol)
-		s.SetRow(offsetCol, i, line[:max_len])
-	}
-}
-
 func (s *section) SetDisplay(display bool) {
 	s.display = display
 	s.setSectionDisplay(display)
@@ -49,7 +38,7 @@ func (s *section) ToggleDisplay() {
 }
 
 func (s *section) setSectionDisplay(display bool) {
-	for _, row := range s.single {
+	for _, row := range s.plate {
 		for _, cell := range row {
 			cell.display = display
 		}

@@ -1,4 +1,4 @@
-package utils
+package tanvas
 
 type single struct {
 	char    rune

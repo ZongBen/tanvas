@@ -1,23 +1,23 @@
-package utils
+package tanvas
 
 import "strings"
 
 type canvas struct {
-	width  int
-	height int
-	depth  int
-	single [][][]single
+	width     int
+	height    int
+	depth     int
+	container [][][]single
 }
 
 var sb = new(strings.Builder)
 
 func CreateCanvas(width, height, depth int) canvas {
 	c := canvas{width: width, height: height, depth: depth}
-	c.single = make([][][]single, height)
-	for i := range c.single {
-		c.single[i] = make([][]single, width)
-		for j := range c.single[i] {
-			c.single[i][j] = make([]single, depth)
+	c.container = make([][][]single, height)
+	for i := range c.container {
+		c.container[i] = make([][]single, width)
+		for j := range c.container[i] {
+			c.container[i][j] = make([]single, depth)
 		}
 	}
 	return c
@@ -25,11 +25,11 @@ func CreateCanvas(width, height, depth int) canvas {
 
 func (c *canvas) CreateSection(x, y, width, height, layer int) section {
 	s := section{width: width, height: height, display: true}
-	s.single = make([][]*single, height)
-	for i := range s.single {
-		s.single[i] = make([]*single, width)
-		for j := range s.single[i] {
-			s.single[i][j] = &c.single[y+i][x+j][layer]
+	s.plate = make([][]*single, height)
+	for i := range s.plate {
+		s.plate[i] = make([]*single, width)
+		for j := range s.plate[i] {
+			s.plate[i][j] = &c.container[y+i][x+j][layer]
 		}
 	}
 	return s
@@ -37,7 +37,7 @@ func (c *canvas) CreateSection(x, y, width, height, layer int) section {
 
 func (c *canvas) Render() string {
 	sb.Reset()
-	for _, row := range c.single {
+	for _, row := range c.container {
 		for _, single := range row {
 			for depth := c.depth - 1; depth >= 0; depth-- {
 				if single[depth].char == 0 {
