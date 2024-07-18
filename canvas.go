@@ -14,7 +14,14 @@ type canvas struct {
 	width     int
 	height    int
 	depth     int
+	offset_x  int
+	offset_y  int
 	container [][][]single
+}
+
+func (c *canvas) SetOffset(x, y int) {
+	c.offset_x = x
+	c.offset_y = y
 }
 
 func CreateCanvas(width, height, depth int) canvas {
@@ -42,10 +49,20 @@ func (c *canvas) CreateSection(x, y, width, height, layer int) section {
 }
 
 func (c *canvas) Render() string {
-	width := c.width + 1 // +1 for newline
-	height := c.height
 	wg := new(sync.WaitGroup)
+	width := c.width + c.offset_x + 1 // +1 for newline
+	height := c.height
 	result := make([]rune, width*height)
+
+	wg.Add(1)
+	offset_y := ""
+	go func() {
+		for i := 0; i < c.offset_y; i++ {
+			offset_y += "\n"
+		}
+		wg.Done()
+	}()
+
 	for y, row := range c.container {
 		wg.Add(1)
 		go func(y int, asyncRow [][]single) {
@@ -66,14 +83,17 @@ func (c *canvas) Render() string {
 						}
 					}
 					wg.Done()
-				}(x, y, cell)
+				}(x+c.offset_x, y, cell)
 			}
+			for i := 0; i < c.offset_x; i++ {
+				result[y*width+i] = ' '
+			}
+			result[y*width+c.width+c.offset_x] = '\n'
 			wg.Done()
-			result[y*width+c.width] = '\n'
 		}(y, row)
 	}
 	wg.Wait()
-	return string(result)
+	return offset_y + string(result)
 }
 
 func (c *canvas) Clear() {
