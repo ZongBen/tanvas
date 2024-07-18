@@ -1,6 +1,8 @@
 package tanvas
 
-import "strings"
+import (
+	"sync"
+)
 
 type Canvas interface {
 	CreateSection(x, y, width, height, layer int) section
@@ -14,8 +16,6 @@ type canvas struct {
 	depth     int
 	container [][][]single
 }
-
-var sb = new(strings.Builder)
 
 func CreateCanvas(width, height, depth int) canvas {
 	c := canvas{width: width, height: height, depth: depth}
@@ -42,26 +42,38 @@ func (c *canvas) CreateSection(x, y, width, height, layer int) section {
 }
 
 func (c *canvas) Render() string {
-	sb.Reset()
-	for _, row := range c.container {
-		for _, single := range row {
-			for depth := c.depth - 1; depth >= 0; depth-- {
-				if single[depth].char == 0 {
-					if depth == 0 {
-						sb.WriteString(" ")
-					}
-					continue
-				}
+	width := c.width + 1 // +1 for newline
+	height := c.height
+	wg := new(sync.WaitGroup)
+	result := make([]rune, width*height)
+	for y, row := range c.container {
+		wg.Add(1)
+		go func(y int, asyncRow [][]single) {
+			for x, cell := range asyncRow {
+				wg.Add(1)
+				go func(x, y int, asynCell []single) {
+					for depth := c.depth - 1; depth >= 0; depth-- {
+						if asynCell[depth].char == 0 {
+							if depth == 0 {
+								result[y*width+x] = ' '
+							}
+							continue
+						}
 
-				if single[depth].display {
-					sb.WriteString(string(single[depth].char))
-					break
-				}
+						if asynCell[depth].display {
+							result[y*width+x] = asynCell[depth].char
+							break
+						}
+					}
+					wg.Done()
+				}(x, y, cell)
 			}
-		}
-		sb.WriteString("\n")
+			wg.Done()
+			result[y*width+c.width] = '\n'
+		}(y, row)
 	}
-	return sb.String()
+	wg.Wait()
+	return string(result)
 }
 
 func (c *canvas) Clear() {
