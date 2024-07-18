@@ -8,6 +8,7 @@ type Canvas interface {
 	CreateSection(x, y, width, height, layer int) section
 	Render() string
 	Clear()
+	SetOffset(x, y int)
 }
 
 type canvas struct {
