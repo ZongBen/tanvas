@@ -54,7 +54,7 @@ func (c *canvas) CreateSection(x, y, width, height, layer int) section {
 	return s
 }
 
-func (c *canvas) Render() string {
+func (c *canvas) Project() string {
 	wg := new(sync.WaitGroup)
 	width := c.width + c.offset_x + 1 // +1 for newline
 	height := c.height
