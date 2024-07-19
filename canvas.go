@@ -6,7 +6,7 @@ import (
 
 type Canvas interface {
 	CreateSection(x, y, width, height, layer int) section
-	Render() string
+	Project() string
 	Clear()
 	SetOffset(x, y int)
 	GetDimensions() (int, int, int)
