@@ -9,6 +9,7 @@ type Canvas interface {
 	Render() string
 	Clear()
 	SetOffset(x, y int)
+	GetDimensions() (int, int, int)
 }
 
 type canvas struct {
@@ -18,6 +19,10 @@ type canvas struct {
 	offset_x  int
 	offset_y  int
 	container [][][]single
+}
+
+func (c *canvas) GetDimensions() (int, int, int) {
+	return c.width, c.height, c.depth
 }
 
 func (c *canvas) SetOffset(x, y int) {
