@@ -7,14 +7,15 @@ type Section interface {
 	SetRow(offset, row int, content string)
 	SetCol(offset, col int, content string)
 	SetDisplay(display bool)
-	ToggleDisplay()
 	Clear()
 }
 
 type section struct {
 	width   int
 	height  int
-	plate   [][]*single
+	layer   int
+	plate   [][]single
+	shadow  [][]*single
 	display bool
 }
 
@@ -22,7 +23,11 @@ func (s *section) SetChar(row, col int, char rune) {
 	if row < 0 || row >= s.height || col < 0 || col >= s.width {
 		return
 	}
-	*s.plate[row][col] = single{char: char, display: s.display}
+	single := single{char: char, display: s.display}
+	s.plate[row][col] = single
+	if s.shadow[row][col] != nil {
+		*s.shadow[row][col] = single
+	}
 }
 
 func (s *section) SetRow(offset, row int, content string) {
@@ -44,13 +49,8 @@ func (s *section) SetDisplay(display bool) {
 	s.setSectionDisplay(display)
 }
 
-func (s *section) ToggleDisplay() {
-	s.display = !s.display
-	s.setSectionDisplay(s.display)
-}
-
 func (s *section) setSectionDisplay(display bool) {
-	for _, row := range s.plate {
+	for _, row := range s.shadow {
 		for _, cell := range row {
 			cell.display = display
 		}
@@ -58,8 +58,11 @@ func (s *section) setSectionDisplay(display bool) {
 }
 
 func (s *section) Clear() {
-	for _, row := range s.plate {
+	for _, row := range s.shadow {
 		for _, cell := range row {
+			if cell == nil {
+				continue
+			}
 			cell.char = 0
 		}
 	}
