@@ -1,16 +1,8 @@
 package tanvas
 
-import ()
+import "sync"
 
-type Section interface {
-	SetChar(row, col int, char rune)
-	SetRow(offset, row int, content string)
-	SetCol(offset, col int, content string)
-	SetDisplay(display bool)
-	Clear()
-}
-
-type section struct {
+type Section struct {
 	width   int
 	height  int
 	layer   int
@@ -19,7 +11,7 @@ type section struct {
 	display bool
 }
 
-func (s *section) SetChar(row, col int, char rune) {
+func (s *Section) SetChar(row, col int, char rune) {
 	if row < 0 || row >= s.height || col < 0 || col >= s.width {
 		return
 	}
@@ -30,40 +22,55 @@ func (s *section) SetChar(row, col int, char rune) {
 	}
 }
 
-func (s *section) SetRow(offset, row int, content string) {
+func (s *Section) SetRow(offset, row int, content string) {
 	max_len := min(len(content), s.width-offset)
 	for i, char := range content[:max_len] {
 		s.SetChar(row, offset+i, char)
 	}
 }
 
-func (s *section) SetCol(offset, col int, content string) {
+func (s *Section) SetCol(offset, col int, content string) {
 	max_len := min(len(content), s.height-offset)
 	for i, char := range content[:max_len] {
 		s.SetChar(offset+i, col, char)
 	}
 }
 
-func (s *section) SetDisplay(display bool) {
+func (s *Section) SetDisplay(display bool) {
 	s.display = display
 	s.setSectionDisplay(display)
 }
 
-func (s *section) setSectionDisplay(display bool) {
-	for _, row := range s.shadow {
-		for _, cell := range row {
-			cell.display = display
-		}
+func (s *Section) setSectionDisplay(display bool) {
+	wg := new(sync.WaitGroup)
+	for j := range s.shadow {
+		wg.Add(1)
+		go func(j int) {
+			for i := range s.shadow[j] {
+				s.plate[j][i].display = display
+				if s.shadow[j][i] != nil {
+					s.shadow[j][i].display = display
+				}
+			}
+			wg.Done()
+		}(j)
 	}
+	wg.Wait()
 }
 
-func (s *section) Clear() {
+func (s *Section) Clear() {
+	wg := new(sync.WaitGroup)
 	for _, row := range s.shadow {
-		for _, cell := range row {
-			if cell == nil {
-				continue
+		wg.Add(1)
+		go func(row []*single) {
+			for _, cell := range row {
+				if cell == nil {
+					continue
+				}
+				cell.char = 0
 			}
-			cell.char = 0
-		}
+			wg.Done()
+		}(row)
 	}
+	wg.Wait()
 }

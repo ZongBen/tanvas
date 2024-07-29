@@ -4,15 +4,7 @@ import (
 	"sync"
 )
 
-type Canvas interface {
-	CreateSection(x, y, width, height, layer int) section
-	Project() string
-	Clear()
-	SetOffset(x, y int)
-	GetDimensions() (int, int, int)
-}
-
-type canvas struct {
+type Canvas struct {
 	width     int
 	height    int
 	layer     int
@@ -21,45 +13,76 @@ type canvas struct {
 	container [][][]single
 }
 
-func (c *canvas) GetDimensions() (int, int, int) {
+func (c *Canvas) GetDimensions() (int, int, int) {
 	return c.width, c.height, c.layer
 }
 
-func (c *canvas) SetOffset(x, y int) {
-	c.offset_x = x
-	c.offset_y = y
+func (c *Canvas) SetOffset(offsetX, offsetY int) {
+	c.offset_x = offsetX
+	c.offset_y = offsetY
 }
 
-func CreateCanvas(width, height, layer int) canvas {
-	c := canvas{width: width, height: height, layer: layer}
+func CreateCanvas(width, height, layer int) Canvas {
+	wg := new(sync.WaitGroup)
+	c := Canvas{width: width, height: height, layer: layer}
 	c.container = make([][][]single, height)
-	for i := range c.container {
-		c.container[i] = make([][]single, width)
-		for j := range c.container[i] {
-			c.container[i][j] = make([]single, layer)
-		}
+	for j := range c.container {
+		wg.Add(1)
+		c.container[j] = make([][]single, width)
+		go func(j int) {
+			for i := range c.container[j] {
+				c.container[j][i] = make([]single, layer)
+			}
+			wg.Done()
+		}(j)
 	}
+	wg.Wait()
 	return c
 }
 
-func (c *canvas) CreateSection(x, y, width, height, layer int) section {
-	s := section{width: width, height: height, layer: layer, display: true}
+func (c *Canvas) CreateSection(offsetX, offsetY, width, height, layer int) Section {
+	wg := new(sync.WaitGroup)
+	s := Section{width: width, height: height, layer: layer, display: true}
 	s.shadow = make([][]*single, height)
 	s.plate = make([][]single, height)
 	for j := range s.shadow {
+		wg.Add(1)
 		s.shadow[j] = make([]*single, width)
 		s.plate[j] = make([]single, width)
-		for i := range s.shadow[j] {
-			if y+j >= c.height || x+i >= c.width {
-				continue
+		go func(j int) {
+			for i := range s.shadow[j] {
+				if offsetY+j >= c.height || offsetX+i >= c.width {
+					continue
+				}
+				s.shadow[j][i] = &c.container[offsetY+j][offsetX+i][layer-1]
 			}
-			s.shadow[j][i] = &c.container[y+j][x+i][layer-1]
-		}
+			wg.Done()
+		}(j)
 	}
+	wg.Wait()
 	return s
 }
 
-func (c *canvas) Project() string {
+func (c *Canvas) MoveSection(s *Section, offsetX, offsetY int) {
+	s.Clear()
+	wg := new(sync.WaitGroup)
+	for j := range s.shadow {
+		wg.Add(1)
+		go func(j int) {
+			for i := range s.shadow[j] {
+				if offsetY+j >= c.height || offsetX+i >= c.width {
+					continue
+				}
+				s.shadow[j][i] = &c.container[offsetY+j][offsetX+i][s.layer-1]
+				*s.shadow[j][i] = s.plate[j][i]
+			}
+			wg.Done()
+		}(j)
+	}
+	wg.Wait()
+}
+
+func (c *Canvas) Project() string {
 	wg := new(sync.WaitGroup)
 	width := c.width + c.offset_x + 1 // +1 for newline
 	height := c.height
@@ -107,12 +130,22 @@ func (c *canvas) Project() string {
 	return offset_y + string(result)
 }
 
-func (c *canvas) Clear() {
+func (c *Canvas) Clear() {
+	wg := new(sync.WaitGroup)
 	for _, row := range c.container {
-		for _, single := range row {
-			for i := range single {
-				single[i].char = 0
+		wg.Add(1)
+		go func(row [][]single) {
+			for _, cell := range row {
+				wg.Add(1)
+				go func(cell []single) {
+					for layer := range cell {
+						cell[layer].char = 0
+					}
+					wg.Done()
+				}(cell)
 			}
-		}
+			wg.Done()
+		}(row)
 	}
+	wg.Wait()
 }
