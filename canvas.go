@@ -51,7 +51,9 @@ func (c *Canvas) CreateSection(offsetX, offsetY, width, height, layer int) Secti
 		s.content[j] = make([]single, width)
 		go func(j int) {
 			for i := range s.shadow[j] {
-				if offsetY+j >= c.height || offsetX+i >= c.width {
+				x := offsetX + i
+				y := offsetY + j
+				if y >= c.height || x >= c.width || x < 0 || y < 0 {
 					continue
 				}
 				s.shadow[j][i] = &c.container[offsetY+j][offsetX+i][layer-1]
@@ -70,7 +72,9 @@ func (c *Canvas) MoveSection(s *Section, offsetX, offsetY int) {
 		wg.Add(1)
 		go func(j int) {
 			for i := range s.shadow[j] {
-				if offsetY+j >= c.height || offsetX+i >= c.width {
+				x := offsetX + i
+				y := offsetY + j
+				if y >= c.height || x >= c.width || x < 0 || y < 0 {
 					continue
 				}
 				s.shadow[j][i] = &c.container[offsetY+j][offsetX+i][s.layer-1]
