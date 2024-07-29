@@ -9,24 +9,33 @@ import (
 )
 
 func main() {
-	word := "Hello"
-	s_len := utf8.RuneCountInString(word)
-	startupPosition := 1 - s_len
 	t := new(tanminal.Tanminal)
-	c := tanvas.CreateCanvas(10, 1, 1)
-	s := c.CreateSection(startupPosition, 0, s_len, 1, 1)
+	c := tanvas.CreateCanvas(20, 2, 1)
+
+	go setTicker(&c, 1, "Hello, World!", 100)
+	go setTicker(&c, 2, "This is a ticker!", 200)
+
+	for {
+		t.Flush(&c)
+		<-time.After(33 * time.Millisecond)
+	}
+}
+
+func setTicker(c *tanvas.Canvas, line int, word string, speed time.Duration) {
+	width, _, _ := c.GetDimensions()
+	s_len := utf8.RuneCountInString(word)
+	startupPosition := width
+	s := c.CreateSection(startupPosition, line-1, s_len, 1, 1)
 
 	s.SetRow(0, 0, word)
 
 	x := startupPosition
-	width, _, _ := c.GetDimensions()
 	for {
-		if x > width {
+		if x < -s_len {
 			x = startupPosition
 		}
-		c.MoveSection(&s, x, 0)
-		t.Flush(&c)
-		x++
-		<-time.After(100 * time.Millisecond)
+		c.MoveSection(&s, x, line-1)
+		x--
+		<-time.After(speed * time.Millisecond)
 	}
 }
