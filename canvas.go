@@ -44,11 +44,11 @@ func (c *Canvas) CreateSection(offsetX, offsetY, width, height, layer int) Secti
 	wg := new(sync.WaitGroup)
 	s := Section{width: width, height: height, layer: layer, display: true}
 	s.shadow = make([][]*single, height)
-	s.plate = make([][]single, height)
+	s.content = make([][]single, height)
 	for j := range s.shadow {
 		wg.Add(1)
 		s.shadow[j] = make([]*single, width)
-		s.plate[j] = make([]single, width)
+		s.content[j] = make([]single, width)
 		go func(j int) {
 			for i := range s.shadow[j] {
 				if offsetY+j >= c.height || offsetX+i >= c.width {
@@ -74,7 +74,7 @@ func (c *Canvas) MoveSection(s *Section, offsetX, offsetY int) {
 					continue
 				}
 				s.shadow[j][i] = &c.container[offsetY+j][offsetX+i][s.layer-1]
-				*s.shadow[j][i] = s.plate[j][i]
+				*s.shadow[j][i] = s.content[j][i]
 			}
 			wg.Done()
 		}(j)

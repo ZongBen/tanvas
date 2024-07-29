@@ -6,7 +6,7 @@ type Section struct {
 	width   int
 	height  int
 	layer   int
-	plate   [][]single
+	content [][]single
 	shadow  [][]*single
 	display bool
 }
@@ -16,7 +16,7 @@ func (s *Section) SetChar(row, col int, char rune) {
 		return
 	}
 	single := single{char: char, display: s.display}
-	s.plate[row][col] = single
+	s.content[row][col] = single
 	if s.shadow[row][col] != nil {
 		*s.shadow[row][col] = single
 	}
@@ -47,7 +47,7 @@ func (s *Section) setSectionDisplay(display bool) {
 		wg.Add(1)
 		go func(j int) {
 			for i := range s.shadow[j] {
-				s.plate[j][i].display = display
+				s.content[j][i].display = display
 				if s.shadow[j][i] != nil {
 					s.shadow[j][i].display = display
 				}
