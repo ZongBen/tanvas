@@ -27,6 +27,6 @@ func main() {
 		c.MoveSection(&s, x, 0)
 		t.Flush(&c)
 		x++
-		<-time.After(1000 * time.Millisecond)
+		<-time.After(100 * time.Millisecond)
 	}
 }
