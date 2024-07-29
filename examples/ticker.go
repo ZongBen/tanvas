@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	t := new(tanminal.Tanminal)
+	t := tanminal.CreateTanminal()
 	c := tanvas.CreateCanvas(20, 2, 1)
 
 	go setTicker(&c, 1, "Hello, World!", 100)
@@ -24,15 +24,14 @@ func main() {
 func setTicker(c *tanvas.Canvas, line int, word string, speed time.Duration) {
 	width, _, _ := c.GetDimensions()
 	s_len := utf8.RuneCountInString(word)
-	startupPosition := width
-	s := c.CreateSection(startupPosition, line-1, s_len, 1, 1)
+	s := c.CreateSection(width, line-1, s_len, 1, 1)
 
 	s.SetRow(0, 0, word)
 
-	x := startupPosition
+	x := width
 	for {
 		if x < -s_len {
-			x = startupPosition
+			x = width
 		}
 		c.MoveSection(&s, x, line-1)
 		x--

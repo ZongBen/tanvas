@@ -21,6 +21,10 @@ type Tanminal struct {
 	verticalAlignCenter   bool
 }
 
+func CreateTanminal() Tanminal {
+	return Tanminal{}
+}
+
 func (t *Tanminal) Flush(c *tanvas.Canvas) {
 	offsetX, offsetY := t.getOffset()
 	Clear()
