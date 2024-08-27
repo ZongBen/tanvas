@@ -13,15 +13,22 @@ type Canvas struct {
 	container [][][]single
 }
 
+// Get the dimensions of the canvas.
 func (c *Canvas) GetDimensions() (int, int, int) {
 	return c.width, c.height, c.layer
 }
 
+// Set the offset of the canvas.
 func (c *Canvas) SetOffset(offsetX, offsetY int) {
 	c.offset_x = offsetX
 	c.offset_y = offsetY
 }
 
+// Create a new canvas with the given width, height, and layer.
+// The layer is the number of layers that can be displayed on the canvas.
+//
+// Example usage:
+// canvas := tanvas.CreateCanvas(10, 10, 3)
 func CreateCanvas(width, height, layer int) Canvas {
 	wg := new(sync.WaitGroup)
 	c := Canvas{width: width, height: height, layer: layer}
@@ -40,6 +47,7 @@ func CreateCanvas(width, height, layer int) Canvas {
 	return c
 }
 
+// Create a new section on the canvas with the given offset, width, height, and layer.
 func (c *Canvas) CreateSection(offsetX, offsetY, width, height, layer int) Section {
 	wg := new(sync.WaitGroup)
 	s := Section{width: width, height: height, layer: layer, display: true}
@@ -65,6 +73,7 @@ func (c *Canvas) CreateSection(offsetX, offsetY, width, height, layer int) Secti
 	return s
 }
 
+// Move the section to the given offset.
 func (c *Canvas) MoveSection(s *Section, offsetX, offsetY int) {
 	s.Clear()
 	wg := new(sync.WaitGroup)
@@ -86,6 +95,7 @@ func (c *Canvas) MoveSection(s *Section, offsetX, offsetY int) {
 	wg.Wait()
 }
 
+// Project 3D canvas to string.
 func (c *Canvas) Project() string {
 	wg := new(sync.WaitGroup)
 	width := c.width + c.offset_x + 1 // +1 for newline
@@ -134,6 +144,7 @@ func (c *Canvas) Project() string {
 	return offset_y + string(result)
 }
 
+// Clear the canvas.
 func (c *Canvas) Clear() {
 	wg := new(sync.WaitGroup)
 	for _, row := range c.container {

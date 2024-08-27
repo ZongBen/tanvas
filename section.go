@@ -11,6 +11,7 @@ type Section struct {
 	display bool
 }
 
+// Set a character at the given row and column.
 func (s *Section) SetChar(row, col int, char rune) {
 	if row < 0 || row >= s.height || col < 0 || col >= s.width {
 		return
@@ -22,6 +23,7 @@ func (s *Section) SetChar(row, col int, char rune) {
 	}
 }
 
+// Set a row of characters at the given offset.
 func (s *Section) SetRow(offset, row int, content string) {
 	max_len := min(len(content), s.width-offset)
 	for i, char := range content[:max_len] {
@@ -29,6 +31,7 @@ func (s *Section) SetRow(offset, row int, content string) {
 	}
 }
 
+// Set a column of characters at the given offset.
 func (s *Section) SetCol(offset, col int, content string) {
 	max_len := min(len(content), s.height-offset)
 	for i, char := range content[:max_len] {
@@ -36,6 +39,7 @@ func (s *Section) SetCol(offset, col int, content string) {
 	}
 }
 
+// Set section visibility.
 func (s *Section) SetDisplay(display bool) {
 	s.display = display
 	s.setSectionDisplay(display)
@@ -58,6 +62,7 @@ func (s *Section) setSectionDisplay(display bool) {
 	wg.Wait()
 }
 
+// Clear the section.
 func (s *Section) Clear() {
 	wg := new(sync.WaitGroup)
 	for _, row := range s.shadow {
