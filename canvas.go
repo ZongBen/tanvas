@@ -1,6 +1,7 @@
 package tanvas
 
 import (
+	"errors"
 	"sync"
 )
 
@@ -26,10 +27,11 @@ func (c *Canvas) SetOffset(offsetX, offsetY int) {
 
 // Create a new canvas with the given width, height, and layer.
 // The layer is the number of layers that can be displayed on the canvas.
-//
-// Example usage:
-// canvas := tanvas.CreateCanvas(10, 10, 3)
-func CreateCanvas(width, height, layer int) Canvas {
+// All parameters are 1 index based.
+func CreateCanvas(width, height, layer int) (Canvas, error) {
+	if width < 1 || height < 1 || layer < 1 {
+		return Canvas{}, errors.New("Width, height, and layer must be greater than 0.")
+	}
 	wg := new(sync.WaitGroup)
 	c := Canvas{width: width, height: height, layer: layer}
 	c.container = make([][][]single, height)
@@ -44,10 +46,12 @@ func CreateCanvas(width, height, layer int) Canvas {
 		}(j)
 	}
 	wg.Wait()
-	return c
+	return c, nil
 }
 
 // Create a new section on the canvas with the given offset, width, height, and layer.
+// It is fine to create a section that is outside the bounds of the canvas.
+// The section will be clipped to the canvas.
 func (c *Canvas) CreateSection(offsetX, offsetY, width, height, layer int) Section {
 	wg := new(sync.WaitGroup)
 	s := Section{width: width, height: height, layer: layer, display: true}
